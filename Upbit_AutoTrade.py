@@ -1,6 +1,8 @@
 import time
 import pyupbit
 import datetime
+import os
+
 
 access = "your-id"
 secret = "your-id"
