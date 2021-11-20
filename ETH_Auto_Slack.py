@@ -42,24 +42,23 @@ def get_current_price(ticker):
     """현재가 조회"""
     return pyupbit.get_orderbook(ticker=ticker)["orderbook_units"][0]["ask_price"]
 
-def printhello():
-    print("Autotrade Server is allive!")
-    post_message(myToken, "#pycoin", "SlackTimer Test Hello")
+def print_alive():
+    print("Autotrade Server is alive!")
+    post_message(myToken, "#pycoin", "ETH Autotrade is alive")
 
 # 로그인
 upbit = pyupbit.Upbit(access, secret)
-print("autotrade start")
-post_message(myToken,"#pycoin", "autotrade start")
-
-schedule.every(1).seconds.do(printhello)  # 10분마다 실행
+nowtime= datetime.datetime.now()
+print(now," autotrade start")
+post_message(myToken,"#pycoin", "ETH-autotrade start"+str(nowtime))
+schedule.every(60).minutes.do(print_alive)  # 10분마다 실행
 # 자동매매 시작
 while True:
-    #schedule.every(1).seconds.do(printhello)  # 10분마다 실행
     schedule.run_pending()
     #time.sleep(1)
     try:
         now = datetime.datetime.now()
-        start_time = get_start_time("KRW-ETH")+datetime.timedelta(hours=2)  #11:00
+        start_time = get_start_time("KRW-ETH")+datetime.timedelta(hours=1)  #10:00
         end_time = start_time + datetime.timedelta(days=1)
 
 #9:00 <현재< #8:59:59
@@ -68,16 +67,16 @@ while True:
             current_price = get_current_price("KRW-ETH")
             if target_price < current_price:
                 krw = get_balance("KRW")
-                if krw > 5000:
-                    buy_result = upbit.buy_market_order("KRW-ETH", krw*0.9995)
-                    post_message(myToken, "#pycoin", "ETH buy : " + str(buy_result))
+                if krw*0.3 > 5000:
+                    buy_result = upbit.buy_market_order("KRW-ETH", krw*0.3)
+                    post_message(myToken, "#pycoin", "ETH buy : " + str(buy_result)+str(now))
         else:
             btc = get_balance("ETH")
-            if btc > 0.0001:
-                sell_result = upbit.sell_market_order("KRW-ETH", btc*0.9995)
+            if btc > 0.001:
+                sell_result = upbit.sell_market_order("KRW-ETH", btc*0.90)
                 post_message(myToken, "#pycoin", "ETH sell : " + str(sell_result))
-        time.sleep(5)
+        time.sleep(1)
     except Exception as e:
         print(e)
-        post_message(myToken, "#pycoin", e)
-        time.sleep(5)
+        post_message(myToken, "#pycoin", e+str(now))
+        time.sleep(1)
