@@ -4,9 +4,9 @@ import datetime
 import requests
 import schedule
 
-access = "kxkbjuQrLzUF8MHE0sGdFThxkIifbrmNvoofbbc8"
-secret = "DjEs4Z05nvx1WJxNa8rGOxKNRaVOogvDxpKAijt8"
-myToken = "xoxb-2750670045522-2752959579764-zuV1ouahzr5rYW9f6fbXdtdf"
+access = "your id"
+secret = "your id"
+myToken = "your id"
 
 def post_message(token, channel, text):
     """슬랙 메시지 전송"""

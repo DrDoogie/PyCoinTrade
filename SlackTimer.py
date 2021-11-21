@@ -10,7 +10,7 @@ def post_message(token, channel, text):
     print(response)
 
 
-myToken = "your-id"
+myToken = "your id"
 
 def printhello():
     print("Autotrade Server is allive!")
@@ -18,7 +18,7 @@ def printhello():
     return 0
 
 
-schedule.every(1).minutes.do(printhello)  # 1분마다 실행
+schedule.every(1).seconds.do(printhello)  # 1분마다 실행
 
 while True:
     schedule.run_pending()
