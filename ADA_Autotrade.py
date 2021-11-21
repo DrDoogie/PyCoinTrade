@@ -49,7 +49,7 @@ def print_alive():
 # 로그인
 upbit = pyupbit.Upbit(access, secret)
 nowtime= datetime.datetime.now()
-print(now," autotrade start")
+print(nowtime," autotrade start")
 post_message(myToken,"#pycoin", "ADA-autotrade start"+str(nowtime))
 schedule.every(60).minutes.do(print_alive)  # 10분마다 실행
 # 자동매매 시작
@@ -59,9 +59,8 @@ while True:
     try:
         now = datetime.datetime.now()
         start_time = get_start_time("KRW-ADA")+datetime.timedelta(hours=1)  #10:00
-        end_time = start_time + datetime.timedelta(days=1)
+        end_time = start_time + datetime.timedelta(days=1)-datetime.timedelta(hours=1) #9:00 <현재< #8:59:59
 
-#9:00 <현재< #8:59:59
         if start_time < now < end_time - datetime.timedelta(seconds=10):
             target_price = get_target_price("KRW-ADA", 0.5)
             current_price = get_current_price("KRW-ADA")
@@ -70,10 +69,20 @@ while True:
                 if krw*0.3 > 5000:
                     buy_result = upbit.buy_market_order("KRW-ADA", krw*0.3)
                     post_message(myToken, "#pycoin", "ADA buy : " + str(buy_result)+str(now))
+                    # 급락 방지 손절
+                    if buy_result*0.98 > current_price:
+                        drop = get_balance("ADA")
+                        fail_result = upbit.sell_market_order("KRW-ADA", drop * 0.90)
+                        post_message(myToken, "#pycoin", "ADA Drop sell : " + str(fail_result))
+                        # 수익 전환
+                        if buy_result*1.03 < current_price:
+                            earn = get_balance("ADA")
+                            success_result = upbit.sell_market_order("KRW-ADA", earn * 0.90)
+                            post_message(myToken, "#pycoin", "ADA 3Pro sell : " + str(success_result))
         else:
             btc = get_balance("ADA")
             if btc > 3:
-                sell_result = upbit.sell_market_order("KRW-ADA", btc*0.90)
+                sell_result = upbit.sell_market_order("KRW-ADA", btc*0.995)
                 post_message(myToken, "#pycoin", "ADA sell : " + str(sell_result))
         time.sleep(1)
     except Exception as e:
