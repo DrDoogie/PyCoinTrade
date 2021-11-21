@@ -21,6 +21,12 @@ def get_target_price(ticker, k):
     target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k
     return target_price
 
+def get_drop_price(ticker, d):
+    """손절가 조회"""
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
+    drop_price = df.iloc[0]['close'] - (df.iloc[0]['high'] - df.iloc[0]['low']) * d
+    return drop_price
+
 def get_start_time(ticker):
     """시작 시간 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=1)
@@ -61,7 +67,6 @@ while True:
         start_time = get_start_time("KRW-BTC")+datetime.timedelta(hours=1)  #10:00
         end_time = start_time + datetime.timedelta(days=1)-datetime.timedelta(hours=1) #9:00 <현재< #8:59:59
 
-
         if start_time < now < end_time - datetime.timedelta(seconds=10):
             target_price = get_target_price("KRW-BTC", 0.5)
             current_price = get_current_price("KRW-BTC")
@@ -70,23 +75,38 @@ while True:
                 if krw*0.3 > 5000:
                     buy_result = upbit.buy_market_order("KRW-BTC", krw*0.3)
                     post_message(myToken, "#pycoin", "BTC buy : " + str(buy_result)+str(now))
-                    # 급락 방지 손절
-                    if buy_result * 0.98 > current_price:
-                        drop = get_balance("BTC")
-                        fail_result = upbit.sell_market_order("KRW-BTC", drop * 0.90)
-                        post_message(myToken, "#pycoin", "BTC Drop sell : " + str(fail_result))
-                        # 수익 전환
-                        if buy_result * 1.03 < current_price:
-                            earn = get_balance("BTC")
-                            success_result = upbit.sell_market_order("KRW-BTC", earn * 0.90)
+                    # 수익 전환
+                    if buy_result * 1.03 < current_price:
+                        earn = get_balance("BTC")
+                        if earn * 0.5 > 0.0001:
+                            success_result = upbit.sell_market_order("KRW-BTC", earn * 0.50)
                             post_message(myToken, "#pycoin", "BTC 3Pro sell : " + str(success_result))
+                            if buy_result * 1.05 < current_price:
+                                earn_2nd = get_balance("BTC")
+                                if earn_2nd *0.9  > 0.0001:
+                                    double_success_result = upbit.sell_market_order("KRW-BTC", earn_2nd * 0.90)
+                                    post_message(myToken, "#pycoin", "BTC 5Pro sell : " + str(double_success_result))
+
+            # 급락 방지 손절
+            else:
+                drop_price = get_drop_price("KRW-BTC", 0.9)
+                if drop_price > current_price:
+                    drop = get_balance("BTC")
+                    if drop * 0.9  > 0.0001:
+                        fail_result = upbit.sell_market_order("KRW-BTC", drop * 0.90)
+                        post_message(myToken, "#pycoin", "ETH Drop sell : " + str(fail_result))
+
         else:
             btc = get_balance("BTC")
-            if btc > 0.0001:
+            if btc *0.9 > 0.0001:
                 sell_result = upbit.sell_market_order("KRW-BTC", btc*0.90)
                 post_message(myToken, "#pycoin", "BTC sell : " + str(sell_result))
         time.sleep(1)
+
     except Exception as e:
         print(e)
-        post_message(myToken, "#pycoin", e+str(now))
+        post_message(myToken, "#pycoin", e)
         time.sleep(1)
+
+
+#ADA >3 , ETH > 0.001 , BTC > 0.0001:

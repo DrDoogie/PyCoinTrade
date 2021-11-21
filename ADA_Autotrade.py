@@ -21,6 +21,12 @@ def get_target_price(ticker, k):
     target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k
     return target_price
 
+def get_drop_price(ticker, d):
+    """손절가 조회"""
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
+    drop_price = df.iloc[0]['close'] - (df.iloc[0]['high'] - df.iloc[0]['low']) * d
+    return drop_price
+
 def get_start_time(ticker):
     """시작 시간 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=1)
@@ -69,23 +75,38 @@ while True:
                 if krw*0.3 > 5000:
                     buy_result = upbit.buy_market_order("KRW-ADA", krw*0.3)
                     post_message(myToken, "#pycoin", "ADA buy : " + str(buy_result)+str(now))
-                    # 급락 방지 손절
-                    if buy_result*0.98 > current_price:
-                        drop = get_balance("ADA")
+                    # 수익 전환
+                    if buy_result * 1.03 < current_price:
+                        earn = get_balance("ADA")
+                        if earn * 0.5 > 3:
+                            success_result = upbit.sell_market_order("KRW-ADA", earn * 0.50)
+                            post_message(myToken, "#pycoin", "ADA 3Pro sell : " + str(success_result))
+                            if buy_result * 1.05 < current_price:
+                                earn_2nd = get_balance("ADA")
+                                if earn_2nd * 0.9 > 3:
+                                    double_success_result = upbit.sell_market_order("KRW-ADA", earn_2nd * 0.90)
+                                    post_message(myToken, "#pycoin", "ADA 5Pro sell : " + str(double_success_result))
+
+            # 급락 방지 손절
+            else:
+                drop_price = get_drop_price("KRW-ADA", 0.9)
+                if drop_price > current_price:
+                    drop = get_balance("ADA")
+                    if drop * 0.9 > 3:
                         fail_result = upbit.sell_market_order("KRW-ADA", drop * 0.90)
                         post_message(myToken, "#pycoin", "ADA Drop sell : " + str(fail_result))
-                        # 수익 전환
-                        if buy_result*1.03 < current_price:
-                            earn = get_balance("ADA")
-                            success_result = upbit.sell_market_order("KRW-ADA", earn * 0.90)
-                            post_message(myToken, "#pycoin", "ADA 3Pro sell : " + str(success_result))
+
         else:
             btc = get_balance("ADA")
-            if btc > 3:
-                sell_result = upbit.sell_market_order("KRW-ADA", btc*0.995)
+            if btc * 0.9 > 3:
+                sell_result = upbit.sell_market_order("KRW-ADA", btc*0.90)
                 post_message(myToken, "#pycoin", "ADA sell : " + str(sell_result))
         time.sleep(1)
+
     except Exception as e:
         print(e)
-        post_message(myToken, "#pycoin", e+str(now))
+        post_message(myToken, "#pycoin", e)
         time.sleep(1)
+
+
+#ADA >3 , ETH > 0.001 , BTC > 0.0001:
