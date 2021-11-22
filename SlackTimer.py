@@ -10,11 +10,11 @@ def post_message(token, channel, text):
     print(response)
 
 
-myToken = "your id"
+myToken = "id"
 
 def printhello():
     print("Autotrade Server is allive!")
-    post_message(myToken, "#pycoin", "SlackTimer Test Hello")
+    post_message(myToken, "#cointrade", "SlackTimer Test Hello")
     return 0
 
 

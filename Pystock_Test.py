@@ -2,14 +2,14 @@ import pyupbit
 import numpy as np
 
 
-df = pyupbit.get_ohlcv("KRW-ETH", count=10)
+df = pyupbit.get_ohlcv("KRW-ETH", count=60)
 #print(df)
 #변동폭 * k 계산, (고가-저가) * k값
-df['range'] = (df['high'] - df['low']) * 0.7
+df['range'] = (df['high'] - df['low']) * 0.5
 df['target'] = df['open'] + df['range'].shift(1)
 
 print(df)
-fee = 0.005
+fee = 0.0005
 df['ror'] = np.where(df['high'] > df['target'],
                      df['close'] / df['target'] - fee,
                      1)
