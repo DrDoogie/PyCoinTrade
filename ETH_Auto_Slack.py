@@ -57,7 +57,7 @@ upbit = pyupbit.Upbit(access, secret)
 nowtime= datetime.datetime.now()
 print(nowtime," autotrade start")
 post_message(myToken,"#cointrade", "ETH-autotrade start"+str(nowtime))
-schedule.every(60).minutes.do(print_alive)  # 10분마다 실행
+schedule.every(120).minutes.do(print_alive)  # 10분마다 실행
 # 자동매매 시작
 while True:
     schedule.run_pending()

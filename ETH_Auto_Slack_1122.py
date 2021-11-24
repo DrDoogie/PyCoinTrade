@@ -4,10 +4,12 @@ import datetime
 import requests
 import schedule
 
+#개인 인증 - 보안 주의
 access = "your-id"
 secret = "your-id"
 myToken = "your-id"
 
+#슬랙 메시지 전송
 def post_message(token, channel, text):
     """슬랙 메시지 전송"""
     response = requests.post("https://slack.com/api/chat.postMessage",
@@ -52,50 +54,53 @@ def print_alive():
     print("Autotrade Server is alive!")
     post_message(myToken, "#cointrade", "ETH Autotrade is alive")
 
-# 로그인
+# 업비트 로그인
 upbit = pyupbit.Upbit(access, secret)
 nowtime= datetime.datetime.now()
 print(nowtime," autotrade start")
 post_message(myToken,"#cointrade", "ETH-autotrade start"+str(nowtime))
-schedule.every(60).minutes.do(print_alive)  # 10분마다 실행
-buy_result = 0   #초기값 : 0
+schedule.every(120).minutes.do(print_alive)  # 10분마다 실행
+buy_price = 0   #초기값 : 0
 
 # 자동매매 시작
 while True:
     schedule.run_pending()
-    #time.sleep(1)
     try:
         now = datetime.datetime.now()
-        start_time = get_start_time("KRW-ETH")+datetime.timedelta(hours=1)  #10:00
-        end_time = start_time + datetime.timedelta(days=1)-datetime.timedelta(hours=1) #9:00 <현재< #8:59:59
+        start_time = get_start_time("KRW-ETH")+datetime.timedelta(hours=1)  #10:00 부터 시작
+        end_time = start_time + datetime.timedelta(days=1)-datetime.timedelta(hours=2) #9:00 <현재< #7:59:59
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-ETH", 0.5)
+            target_price = get_target_price("KRW-ETH", 0.4)
             current_price = get_current_price("KRW-ETH")
-
             krw = get_balance("KRW")
-            earn = get_balance("ETH")                 #현금 잔고와 Coin 잔고 확인
+            coin = get_balance("ETH")                 #현금 잔고와 Coin 잔고 확인
             if target_price < current_price:
                 if krw*0.3 > 5000:
                     buy_result = upbit.buy_market_order("KRW-ETH", krw*0.3)
-                    post_message(myToken, "#cointrade", "ETH buy : " + str(buy_result)+str(now))
-                  # 수익 전환
-            elif buy_result != 0 and buy_result * 1.05 < current_price and earn *0.9 >0.001:
-                success1_result = upbit.sell_market_order("KRW-ETH", earn * 0.50)
-                post_message(myToken, "#cointrade", "ETH 5Pro sell : " + str(success1_result))
-            elif buy_result != 0 and buy_result * 1.03 < current_price and earn *0.5 >0.001:
-                success2_result = upbit.sell_market_order("KRW-ETH", earn * 0.50)
-                post_message(myToken, "#cointrade", "ETH 3Pro sell : " + str(success2_result))
-            elif start_time + datetime.timedelta(hours=6) < now and buy_result != 0 and buy_result * 1.02 < current_price and earn *0.5 >0.001:
-                success3_result = upbit.sell_market_order("KRW-ETH", earn * 0.50)
-                post_message(myToken, "#cointrade", "ETH 2Pro sell : " + str(success3_result))
-            elif start_time + datetime.timedelta(hours=10) < now and buy_result != 0 and buy_result * 1.015 < current_price and earn *0.5 >0.001:
-                success4_result = upbit.sell_market_order("KRW-ETH", earn * 0.50)
-                post_message(myToken, "#cointrade", "ETH 1.5Pro sell : " + str(success4_result))
-            elif start_time + datetime.timedelta(hours=13) < now and buy_result != 0 and buy_result * 1.01 < current_price and earn *0.5 >0.001:
-                success5_result = upbit.sell_market_order("KRW-ETH", earn * 0.50)
-                post_message(myToken, "#cointrade", "ETH 1Pro sell : " + str(success5_result))
-
+                    buy_price = float(buy_result['price'])
+                    post_message(myToken, "#cointrade", "ETH buy : " + str(buy_price)+str(now))
+                    # 수익 전환 매도
+                elif buy_price != 0 and buy_price * 1.05 < current_price and coin *0.9 >0.001:
+                    success1_result = upbit.sell_market_order("KRW-ETH", coin * 0.50)
+                    success1_price = float(success1_result['price'])
+                    post_message(myToken, "#cointrade", "ETH 5Pro sell : " + str(success1_price))
+                elif start_time + datetime.timedelta(hours=2) < now and buy_price != 0 and buy_price * 1.03 < current_price and coin *0.5 >0.001:
+                    success2_result = upbit.sell_market_order("KRW-ETH", coin * 0.50)
+                    success2_price = float(success2_result['price'])
+                    post_message(myToken, "#cointrade", "ETH 3Pro sell : " + str(success2_price))
+                elif start_time + datetime.timedelta(hours=4) < now and buy_price != 0 and buy_price * 1.02 < current_price and coin *0.5 > 0.001:
+                    success3_result = upbit.sell_market_order("KRW-ETH", coin * 0.50)
+                    success3_price = float(success3_result['price'])
+                    post_message(myToken, "#cointrade", "ETH 2Pro sell : " + str(success3_price))
+                elif start_time + datetime.timedelta(hours=6) < now and buy_price != 0 and buy_price * 1.015 < current_price and coin *0.5 > 0.001:
+                    success4_result = upbit.sell_market_order("KRW-ETH", coin * 0.50)
+                    success4_price = float(success4_result['price'])
+                    post_message(myToken, "#cointrade", "ETH 1.5Pro sell : " + str(success4_price))
+                elif start_time + datetime.timedelta(hours=10) < now and buy_price != 0 and buy_price * 1.01 < current_price and coin *0.5 > 0.001:
+                    success5_result = upbit.sell_market_order("KRW-ETH", coin * 0.50)
+                    success5_price = float(success5_result['price'])
+                    post_message(myToken, "#cointrade", "ETH 1Pro sell : " + str(success5_price))
             # 하락세 급락 방지 손절
             else:
                 drop_price = get_drop_price("KRW-ETH", 0.9)
@@ -103,7 +108,8 @@ while True:
                     drop = get_balance("ETH")
                     if drop * 0.9 > 0.001:
                         fail_result = upbit.sell_market_order("KRW-ETH", drop * 0.90)
-                        post_message(myToken, "#cointrade", "ETH Drop sell : " + str(fail_result))
+                        fail_price = float(fail_result['price'])
+                        post_message(myToken, "#cointrade", "ETH Drop sell : " + str(fail_price))
 
         else:
             btc = get_balance("ETH")
@@ -115,7 +121,8 @@ while True:
     except Exception as e:
         print(e)
         post_message(myToken, "#cointrade", e)
-        time.sleep(1)
+        break
+        #time.sleep(1)
 
 
 #ADA >3 , ETH > 0.001 , BTC > 0.0001:
