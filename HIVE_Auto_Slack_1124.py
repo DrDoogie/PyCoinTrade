@@ -69,7 +69,8 @@ post_message(myToken, "#cointrade", "HIVE-autotrade start" + str(nowtime))
 schedule.every(60).minutes.do(print_alive)  # 10분마다 실행
 buy_result = {'price':'0.0', 'volume' : '0.0'}  # 초기 dict 값 : 0
 sell_result = {'price':'0.0', 'volume' : '0.0'}  # 초기 dict 값 : 0
-buy_price = float(buy_result['price'])
+#buy_price = float(buy_result['price'])
+buy_price = current_price * 1.0005
 buy_volume = float(buy_result['volume'])
 
 # 자동매매 시작
@@ -86,30 +87,37 @@ while True:
             krw = get_balance("KRW")
             earn = get_balance("HIVE")  # 현금 잔고와 Coin 잔고 확인
             if target_price < current_price :
-                if krw * 0.3 > 5000 and current_price < target_price * 1.015 :
+                if krw * 0.3 > 5000 and current_price  :
                     buy_result = upbit.buy_market_order("KRW-HIVE", krw * 0.3)
-                    buy_price = float(buy_result['price'])
+                    #buy_price = float(buy_result['price'])
+                    buy_price = current_price * 1.0005
                     post_message(myToken, "#cointrade", "HIVE buy : " + str(buy_price) )
                 # 수익 전환
-                elif buy_price != 0.0 and target_price * 1.05 < current_price and earn * 0.995 > 3.0001:
+                elif buy_price != 0.0 and buy_price * 1.20 < current_price and earn * 0.995 > 3.0001:
                     sell_result = upbit.sell_market_order("KRW-HIVE", earn * 0.9950)
                     sell_price = float(sell_result['volume'])
                     break
-                    post_message(myToken, "#cointrade", "HIVE 5Pro sell : " + str(sell_price))
-                elif buy_price != 0.0 and target_price * 1.03 < current_price and earn * 0.995 > 3.0001:
+                    post_message(myToken, "#cointrade", "HIVE 20Pro sell : " + str(sell_price))
+                elif buy_price != 0.0 and buy_price * 1.15 < current_price and earn * 0.995 > 3.0001:
                     sell_result = upbit.sell_market_order("KRW-HIVE", earn * 0.9950)
                     sell_price = float(sell_result['volume'])
-                    post_message(myToken, "#cointrade", "HIVE 3Pro sell : " + str(sell_price))
+                    post_message(myToken, "#cointrade", "HIVE 15Pro sell : " + str(sell_price))
                     break
-                elif start_time + datetime.timedelta(hours=4) < now and buy_price != 0.0 and target_price * 1.02 < current_price and earn * 0.995 > 3.0001:
+                elif buy_price != 0.0 and buy_price * 1.12 < current_price and earn * 0.995 > 3.0001:
                     sell_result = upbit.sell_market_order("KRW-HIVE", earn * 0.50)
                     sell_price = float(sell_result['volume'])
-                    post_message(myToken, "#cointrade", "HIVE 2Pro sell : " + str(sell_price))
+                    post_message(myToken, "#cointrade", "HIVE 12Pro sell : " + str(sell_price))
                     break
-                elif start_time + datetime.timedelta(hours=6) < now and buy_price != 0.0 and target_price * 1.015 < current_price and earn * 0.995 > 3.0001:
+
+                elif start_time + datetime.timedelta(hours=6) < now and buy_price != 0.0 and buy_price * 1.05 < current_price and earn * 0.995 > 3.0001:
                     sell_result = upbit.sell_market_order("KRW-HIVE", earn * 0.9950)
                     sell_price = float(sell_result['volume'])
-                    post_message(myToken, "#cointrade", "HIVE 1.5Pro sell : " + str(sell_price))
+                    post_message(myToken, "#cointrade", "HIVE 5Pro sell : " + str(sell_price))
+                    break
+                elif start_time + datetime.timedelta(hours=10) < now and buy_price != 0.0 and buy_price * 1.02 < current_price and earn * 0.995 > 3.0001:
+                    sell_result = upbit.sell_market_order("KRW-HIVE", earn * 0.9950)
+                    sell_price = float(sell_result['volume'])
+                    post_message(myToken, "#cointrade", "HIVE 2Pro sell : " + str(sell_price))
                     break
 
             # 하락세 급락 방지 손절
