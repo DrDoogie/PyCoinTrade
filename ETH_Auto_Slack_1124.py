@@ -91,27 +91,27 @@ while True:
                     buy_price = float(buy_result['price'])
                     post_message(myToken, "#cointrade", "ETH buy : " + str(buy_price) )
                 # 수익 전환
-                elif buy_price != 0.0 and buy_price * 1.05 < current_price and earn * 0.9 > 0.001:
+                elif buy_price != 0.0 and target_price * 1.05 < current_price and earn * 0.9 > 0.001:
                     sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.90)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ETH 5Pro sell : " + str(sell_price))
                     break
-                elif buy_price != 0.0 and buy_price * 1.03 < current_price and earn * 0.9 > 0.001:
+                elif buy_price != 0.0 and target_price * 1.03 < current_price and earn * 0.9 > 0.001:
                     sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.90)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ETH 3Pro sell : " + str(sell_price))
                     break
-                elif start_time + datetime.timedelta(hours=4) < now and buy_price != 0.0 and buy_price * 1.02 < current_price and earn * 0.9 > 0.001:
+                elif start_time + datetime.timedelta(hours=4) < now and buy_price != 0.0 and target_price * 1.02 < current_price and earn * 0.9 > 0.001:
                     sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.90)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ETH 2Pro sell : " + str(sell_price))
                     break
-                elif start_time + datetime.timedelta(hours=6) < now and buy_price != 0.0 and buy_price * 1.015 < current_price and earn * 0.9 > 0.001:
+                elif start_time + datetime.timedelta(hours=6) < now and buy_price != 0.0 and target_price * 1.015 < current_price and earn * 0.9 > 0.001:
                     sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.90)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ETH 1.5Pro sell : " + str(sell_price))
                     break
-                elif start_time + datetime.timedelta(hours=8) < now and buy_price != 0.0 and buy_price * 1.01 < current_price and earn * 0.9 > 0.001:
+                elif start_time + datetime.timedelta(hours=8) < now and buy_price != 0.0 and target_price * 1.01 < current_price and earn * 0.9 > 0.001:
                     sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.90)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ETH 1Pro sell : " + str(sell_price))
