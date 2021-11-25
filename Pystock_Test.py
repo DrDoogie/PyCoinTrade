@@ -2,7 +2,7 @@ import pyupbit
 import numpy as np
 
 
-df = pyupbit.get_ohlcv("KRW-ETH", count=60)
+df = pyupbit.get_ohlcv("KRW-HIVE", count=60)
 #print(df)
 #변동폭 * k 계산, (고가-저가) * k값
 df['range'] = (df['high'] - df['low']) * 0.5

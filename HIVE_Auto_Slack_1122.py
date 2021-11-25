@@ -59,7 +59,7 @@ def print_alive():
 upbit = pyupbit.Upbit(access, secret)
 nowtime= datetime.datetime.now()
 print(nowtime," autotrade start")
-post_message(myToken,"#cointrade", "HIVE-autotrade start"+str(nowtime))
+post_message(myToken,"#cointrade", "PyCharm HIVE-autotrade start"+str(nowtime))
 schedule.every(120).minutes.do(print_alive)  # 10분마다 실행
 buy_price = 0   #초기값 : 0
 
@@ -123,7 +123,7 @@ while True:
         print(e)
         post_message(myToken, "#cointrade", e)
         break
-        #time.sleep(1)
+        time.sleep(1)
 
 
 #ADA >3 , ETH > 0.001 , BTC > 0.0001:, HIVE >3
