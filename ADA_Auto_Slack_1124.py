@@ -91,34 +91,39 @@ while True:
                     buy_price = float(buy_result['price'])
                     post_message(myToken, "#cointrade", "ADA buy : " + str(buy_price) )
                 # 수익 전환
-                elif buy_price != 0.0 and buy_price * 1.05 < current_price and earn * 0.9 > 3.0001:
-                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.90)
+                elif buy_price != 0.0 and buy_price * 1.05 < current_price and earn * 0.995 > 3.0001:
+                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.9950)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ADA 5Pro sell : " + str(sell_price))
-                elif buy_price != 0.0 and buy_price * 1.03 < current_price and earn * 0.9 > 3.0001:
-                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.50)
+                    break
+                elif buy_price != 0.0 and buy_price * 1.03 < current_price and earn * 0.995 > 3.0001:
+                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.9950)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ADA 3Pro sell : " + str(sell_price))
-                elif start_time + datetime.timedelta(hours=4) < now and buy_price != 0.0 and buy_price * 1.02 < current_price and earn * 0.5 > 3.0001:
-                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.50)
+                    break
+                elif start_time + datetime.timedelta(hours=4) < now and buy_price != 0.0 and buy_price * 1.02 < current_price and earn * 0.995 > 3.0001:
+                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.99550)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ADA 2Pro sell : " + str(sell_price))
-                elif start_time + datetime.timedelta(hours=6) < now and buy_price != 0.0 and buy_price * 1.015 < current_price and earn * 0.5 > 3.0001:
-                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.50)
+                    break
+                elif start_time + datetime.timedelta(hours=6) < now and buy_price != 0.0 and buy_price * 1.015 < current_price and earn * 0.995 > 3.0001:
+                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.9950)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ADA 1.5Pro sell : " + str(sell_price))
-                elif start_time + datetime.timedelta(hours=8) < now and buy_price != 0.0 and buy_price * 1.01 < current_price and earn * 0.5 > 3.0001:
-                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.50)
+                    break
+                elif start_time + datetime.timedelta(hours=8) < now and buy_price != 0.0 and buy_price * 1.01 < current_price and earn * 0.995 > 3.0001:
+                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.9950)
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ADA 1Pro sell : " + str(sell_price))
+                    break
 
             # 하락세 급락 방지 손절
             else:
-                drop_price = get_drop_price("KRW-ADA", 0.9)
+                drop_price = get_drop_price("KRW-ADA", 0.995)
                 if drop_price > current_price:
                     drop = get_balance("ADA")
-                    if drop * 0.9 > 3.0001:
-                        sell_result = upbit.sell_market_order("KRW-ADA", drop * 0.90)
+                    if drop * 0.995 > 3.0001:
+                        sell_result = upbit.sell_market_order("KRW-ADA", drop * 0.9950)
                         sell_price = float(sell_result['volume'])
                         post_message(myToken, "#cointrade", "ADA Drop sell : " + str(sell_price))
 
