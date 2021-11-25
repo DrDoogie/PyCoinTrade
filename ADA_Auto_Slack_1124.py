@@ -86,7 +86,7 @@ while True:
             krw = get_balance("KRW")
             earn = get_balance("ADA")  # 현금 잔고와 Coin 잔고 확인
             if target_price < current_price:
-                if krw * 0.3 > 5000:
+                if krw * 0.3 > 5000 and current_price < target_price * 1.015:
                     buy_result = upbit.buy_market_order("KRW-ADA", krw * 0.3)
                     buy_price = float(buy_result['price'])
                     post_message(myToken, "#cointrade", "ADA buy : " + str(buy_price) )
@@ -111,11 +111,7 @@ while True:
                     sell_price = float(sell_result['volume'])
                     post_message(myToken, "#cointrade", "ADA 1.5Pro sell : " + str(sell_price))
                     break
-                elif start_time + datetime.timedelta(hours=8) < now and buy_price != 0.0 and target_price * 1.01 < current_price and earn * 0.995 > 3.0001:
-                    sell_result = upbit.sell_market_order("KRW-ADA", earn * 0.9950)
-                    sell_price = float(sell_result['volume'])
-                    post_message(myToken, "#cointrade", "ADA 1Pro sell : " + str(sell_price))
-                    break
+               
 
             # 하락세 급락 방지 손절
             else:
