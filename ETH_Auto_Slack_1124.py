@@ -24,20 +24,17 @@ def get_target_price(ticker, k):
     target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k
     return target_price
 
-
 def get_drop_price(ticker, d):
     """손절가 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
     drop_price = df.iloc[0]['close'] - (df.iloc[0]['high'] - df.iloc[0]['low']) * d
     return drop_price
 
-
 def get_start_time(ticker):
     """시작 시간 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=1)
     start_time = df.index[0]
     return start_time
-
 
 def get_balance(ticker):
     """잔고 조회"""
@@ -50,16 +47,13 @@ def get_balance(ticker):
                 return 0
     return 0
 
-
 def get_current_price(ticker):
     """현재가 조회"""
     return pyupbit.get_orderbook(ticker=ticker)["orderbook_units"][0]["ask_price"]
 
-
 def print_alive():
     print("Autotrade Server is alive!")
     post_message(myToken, "#cointrade", "ETH Autotrade is alive")
-
 
 # 로그인
 upbit = pyupbit.Upbit(access, secret)
@@ -67,10 +61,12 @@ nowtime = datetime.datetime.now()
 print(nowtime, " autotrade start")
 post_message(myToken, "#cointrade", "ETH-autotrade start" + str(nowtime))
 schedule.every(60).minutes.do(print_alive)  # 10분마다 실행
+
 buy_result = {'price':'0.0', 'volume' : '0.0'}  # 초기 dict 값 : 0
 sell_result = {'price':'0.0', 'volume' : '0.0'}  # 초기 dict 값 : 0
 #buy_price = float(buy_result['price'])
-buy_price = current_price * 1.0005
+current_price = get_current_price("KRW-ETH")
+buy_price = current_price * 1.5
 buy_volume = float(buy_result['volume'])
 
 # 자동매매 시작
@@ -79,7 +75,7 @@ while True:
     try:
         now = datetime.datetime.now()
         start_time = get_start_time("KRW-ETH") + datetime.timedelta(hours=1)  # 10:00
-        end_time = start_time + datetime.timedelta(days=1) - datetime.timedelta(hours=1)  # 10:00 <현재< #8:59:59
+        end_time = start_time + datetime.timedelta(days=1) - datetime.timedelta(hours=1)  # 10:00 <현재< 다음날 #8:59:59
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
             target_price = get_target_price("KRW-ETH", 0.5)
@@ -87,10 +83,10 @@ while True:
             krw = get_balance("KRW")
             earn = get_balance("ETH")  # 현금 잔고와 Coin 잔고 확인
             if target_price < current_price:
-                if krw * 0.3 > 5000 and current_price :
+                if krw * 0.3 > 5000 and buy_price >= 0:
                     buy_result = upbit.buy_market_order("KRW-ETH", krw * 0.3)
                     #buy_price = float(buy_result['price'])
-                    buy_price = current_price * 1.0005
+                    buy_price = get_current_price("KRW-ETH") * 1.001
                     post_message(myToken, "#cointrade", "ETH buy : " + str(buy_price) )
                 # 수익 전환
                 elif buy_price != 0.0 and buy_price * 1.05 < current_price and earn * 0.9 > 0.001:
