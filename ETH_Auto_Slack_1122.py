@@ -26,7 +26,7 @@ def get_target_price(ticker, k):
 
 
 def get_drop_price(ticker, d):
-    """손절가 조회"""
+    """손절가 Target 조회"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
     drop_price = df.iloc[0]['close'] - (df.iloc[0]['high'] - df.iloc[0]['low']) * d
     return drop_price
