@@ -57,7 +57,7 @@ def get_current_price(ticker):
 
 def print_alive():
     print("Autotrade Server is alive!")
-    post_message(myToken, "#cointrade", "BTC Autotrade is alive")
+    post_message(myToken, "#cointrade", "ETH Autotrade is alive")
 
 
 # 로그인
@@ -68,7 +68,7 @@ post_message(myToken, "#cointrade", "ETH autotrade start" + str(nowtime))
 schedule.every(60).minutes.do(print_alive)  # 10분마다 실행
 buy_result = {'price':'0.0', 'volume' : '0.0'}  # 초기값 : 0
 krw = get_balance("KRW")
-
+buy_price = 100000000000 #천억
 
 # 자동매매 시작
 while True:
@@ -80,7 +80,7 @@ while True:
         end_time = start_time + datetime.timedelta(days=1) - datetime.timedelta(hours=1)  # 9:00 <현재< #8:59:59
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-ETH", 0.5)
+            target_price = get_target_price("KRW-ETH", 0.1)
             #print("target_price:",target_price)
             current_price = get_current_price("KRW-ETH")
             #print("current_price:", current_price)
@@ -91,47 +91,58 @@ while True:
 
             if target_price < current_price:
                 #print("매수준비")
-                if krw * 0.3 > 5000:
+                if krw * 0.3 > 5000 and current_price < buy_price:
                     #print("잔고충분")
                     krw = get_balance("KRW")  # 잔고조회
-                    buy_result = upbit.buy_market_order("KRW-ETH", krw * 0.3)
-                    post_message(myToken, "#cointrade", "ETH buy : " + str(buy_result) + str(now)) if buy_result is not None else None
+                    buy_result = upbit.buy_market_order("KRW-ETH", krw * 0.4)
+                    post_message(myToken, "#cointrade", "ETH buy : " + str(buy_result['price']) + str(now)) if buy_result is not None else None
                     #print("buy_result:",buy_result)
-                    buy_price = get_current_price("KRW-ETH") * 1.001 if buy_result is not None else None  # 매수 금액을 buy_price에 입력
+                    buy_price = get_current_price("KRW-ETH") if buy_result is not None else None  # 매수 금액을 buy_price에 입력
                     #print("buy_price_completed:", buy_price)
                     post_message(myToken, "#cointrade", "ETH buy price: " + str(buy_price) + str(now))
                     # 매수 끝나고 나서 매도 대기
                     while buy_price is not None :
                         current_price = get_current_price("KRW-ETH")
-                        #print("비교대상:",current_price)
-                        #print("산가격:", buy_price)
+                        #print("현재가:",current_price)
+                        #print("매수가격:", buy_price)
+                        earn = get_balance("ETH")  # 현금 잔고와 Coin 잔고 확인
                         now = datetime.datetime.now()
-                        #print(now)
+                        print(now)
                         if buy_price * 1.05 < current_price and earn * 0.995 > 0.001:
                             sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.995)
-                            post_message(myToken, "#cointrade", "ETH 5Pro sell : " + str(float(sell_result['price'])))
+                            sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
+                            post_message(myToken, "#cointrade", "ETH 5Pro sell : " + str(float(sell_result['volume'])))
+                            post_message(myToken, "#cointrade", "ETH 5Pro sell : " + str(sell_price))
                             break
                         elif buy_price * 1.03 < current_price and earn * 0.995 > 0.001:
                             sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.9950)
-                            post_message(myToken, "#cointrade", "ETH 3Pro sell : " + str(float(sell_result['price'])))
+                            sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
+                            post_message(myToken, "#cointrade", "ETH 3Pro sell : " + str(float(sell_result['volume'])))
+                            post_message(myToken, "#cointrade", "ETH 3Pro sell : " + str(sell_price))
                             break
-                        elif start_time + datetime.timedelta(hours=6) < now and buy_price * 1.02 < current_price and earn * 0.995 > 0.001:
+                        elif start_time + datetime.timedelta(hours=1) < now and buy_price * 1.02 < current_price and earn * 0.995 > 0.001:
                             sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.9950)
-                            post_message(myToken, "#cointrade", "ETH 2Pro sell : " + str(float(sell_result['price'])))
+                            sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
+                            post_message(myToken, "#cointrade", "ETH 2Pro sell : " + str(float(sell_result['volume'])))
+                            post_message(myToken, "#cointrade", "ETH 3Pro sell : " + str(sell_price))
                             break
-                        elif start_time + datetime.timedelta(hours=10) < now and buy_price * 1.015 < current_price and earn * 0.995 > 0.001:
+                        elif start_time + datetime.timedelta(hours=2) < now and buy_price * 1.015 < current_price and earn * 0.995 > 0.001:
                             sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.9950)
-                            post_message(myToken, "#cointrade", "ETH 1.5Pro sell : " + str(float(sell_result['price'])))
+                            sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
+                            post_message(myToken, "#cointrade", "ETH 1.5Pro sell : " + str(float(sell_result['volume'])))
+                            post_message(myToken, "#cointrade", "ETH 1.5Pro sell : " + str(sell_price))
                             break
-                        elif start_time + datetime.timedelta(hours=13) < now and buy_price * 1.01 < current_price and earn * 0.995 > 0.001:
+                        elif start_time + datetime.timedelta(hours=3) < now and buy_price * 1.01 < current_price and earn * 0.995 > 0.001:
                             sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.9950)
-                            post_message(myToken, "#cointrade", "ETH 1Pro sell : " + str(float(sell_result['price'])))
+                            sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
+                            post_message(myToken, "#cointrade", "ETH 1Pro sell : " + str(float(sell_result['volume'])))
+                            post_message(myToken, "#cointrade", "ETH 1.5Pro sell : " + str(sell_price))
                             break
                         elif target_price > current_price :
                             drop_price = get_drop_price("KRW-ETH", 0.9)
                             if drop_price > current_price:
                                 drop = get_balance("ETH")
-                                if drop * 0.9 > 0.0001:
+                                if drop * 0.9 > 0.001:
                                     sell_result = upbit.sell_market_order("KRW-ETH", drop * 0.90)
                                     sell_coin = float(sell_result['volume'])
                                     post_message(myToken, "#cointrade", "ETH Drop sell : " + str(sell_coin))
