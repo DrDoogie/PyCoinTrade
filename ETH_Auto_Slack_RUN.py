@@ -80,7 +80,7 @@ upbit = pyupbit.Upbit(access, secret)
 nowtime = datetime.datetime.now()
 print(nowtime, " autotrade start")
 post_message(myToken, "#cointrade", "ETH autotrade start" + str(nowtime))
-schedule.every(1).minutes.do(print_alive)  # 60분마다 실행
+schedule.every(60).minutes.do(print_alive)  # 60분마다 실행
 buy_result = {'price':'0.0', 'volume' : '0.0'}  # 초기값 : 0
 krw = get_balance("KRW")
 buy_price = 100000000000 # 초기값 천억
