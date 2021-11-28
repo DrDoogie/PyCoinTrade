@@ -116,15 +116,15 @@ while True:
             #print("current_price:", current_price)
 
 
-            if target_price < current_price :
-            #if target_price < current_price and current_price < ma60:
+            #if target_price < current_price :
+            if target_price < current_price and current_price < ma60:
                 #print("매수준비")
                 #print("buy_Price==", buy_price)
                 current_price = get_current_price("KRW-BTC")
                 #print("current_price:", current_price)
 
-                if krw * 0.3 > 5000 and current_price < buy_price:
-                #if krw * 0.3 > 5000 and current_price < buy_price and current_price < ma60:
+                #if krw * 0.3 > 5000 and current_price < buy_price:
+                if krw * 0.3 > 5000 and current_price < buy_price and current_price < ma60:
                     #print("잔고 5000원 이상")
                     #print("buy_Price==", buy_price)
                     krw = get_balance("KRW")  # 잔고조회
@@ -145,7 +145,7 @@ while True:
                         #print(now)
                         if buy_price * 1.05 < current_price and earn * 0.995 > 0.0001:
                             sell_result = upbit.sell_market_order("KRW-BTC", earn * 0.995)
-                            sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
+                            sell_price = get_current_price("KRW-BTC") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
                             print("매도가:", sell_price)
                             post_message(myToken, "#cointrade", "BTC 5Pro sell : " + str(float(sell_result['volume']))) if sell_result is not None else None
                             post_message(myToken, "#cointrade", "BTC 5Pro sell : " + str(sell_price))
@@ -169,13 +169,6 @@ while True:
                             sell_price = get_current_price("KRW-BTC") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
                             print("매도가:", sell_price)
                             post_message(myToken, "#cointrade", "BTC 1.5Pro sell : " + str(float(sell_result['volume']))) if sell_result is not None else None
-                            post_message(myToken, "#cointrade", "BTC 1.5Pro sell : " + str(sell_price))
-                            break
-                        elif start_time + datetime.timedelta(hours=3) < now and buy_price * 1.01 < current_price and earn * 0.995 > 0.0001:
-                            sell_result = upbit.sell_market_order("KRW-BTC", earn * 0.9950)
-                            sell_price = get_current_price("KRW-BTC") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
-                            print("매도가:", sell_price)
-                            post_message(myToken, "#cointrade", "BTC 1Pro sell : " + str(float(sell_result['volume']))) if sell_result is not None else None
                             post_message(myToken, "#cointrade", "BTC 1.5Pro sell : " + str(sell_price))
                             break
                         elif target_price > current_price :
