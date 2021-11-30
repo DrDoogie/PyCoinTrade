@@ -62,6 +62,15 @@ print(nowtime," autotrade start")
 post_message(myToken,"#cointrade", "PyCharm HIVE-autotrade start"+str(nowtime))
 schedule.every(120).minutes.do(print_alive)  # 10분마다 실행
 buy_price = 0   #초기값 : 0
+current_price = get_current_price("KRW-HIVE")
+print("current_price:",current_price)
+
+
+#문자메세지
+post_message(myToken, "#cointrade", "ma60 : " + str(ma60))
+post_message(myToken, "#cointrade", "target_price : " + str(target_price))
+post_message(myToken, "#cointrade", "current_price : " + str(current_price))
+
 
 # 자동매매 시작
 while True:
@@ -69,7 +78,7 @@ while True:
     try:
         now = datetime.datetime.now()
         start_time = get_start_time("KRW-HIVE")+datetime.timedelta(hours=1)  #10:00 부터 시작
-        end_time = start_time + datetime.timedelta(days=1)-datetime.timedelta(hours=2) #9:00 <현재< #7:59:59
+        end_time = start_time + datetime.timedelta(days=1) - datetime.timedelta(hours=2)  # 10:00 <현재< #7:59:59
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
             target_price = get_target_price("KRW-HIVE", 0.4)
@@ -86,15 +95,15 @@ while True:
                     success1_result = upbit.sell_market_order("KRW-HIVE", coin * 0.50)
                     success1_price = float(success1_result['price'])
                     post_message(myToken, "#cointrade", "HIVE 5Pro sell : " + str(success1_price))
-                elif start_time + datetime.timedelta(hours=2) < now and buy_price != 0 and buy_price * 1.03 < current_price and coin *0.5 >3.001:
+                elif start_time + datetime.timedelta(hours=3) < now and buy_price != 0 and buy_price * 1.03 < current_price and coin *0.5 >3.001:
                     success2_result = upbit.sell_market_order("KRW-HIVE", coin * 0.50)
                     success2_price = float(success2_result['price'])
                     post_message(myToken, "#cointrade", "HIVE 3Pro sell : " + str(success2_price))
-                elif start_time + datetime.timedelta(hours=4) < now and buy_price != 0 and buy_price * 1.02 < current_price and coin *0.5 > 3.001:
+                elif start_time + datetime.timedelta(hours=6) < now and buy_price != 0 and buy_price * 1.02 < current_price and coin *0.5 > 3.001:
                     success3_result = upbit.sell_market_order("KRW-HIVE", coin * 0.50)
                     success3_price = float(success3_result['price'])
                     post_message(myToken, "#cointrade", "HIVE 2Pro sell : " + str(success3_price))
-                elif start_time + datetime.timedelta(hours=6) < now and buy_price != 0 and buy_price * 1.015 < current_price and coin *0.5 > 3.001:
+                elif start_time + datetime.timedelta(hours=9) < now and buy_price != 0 and buy_price * 1.015 < current_price and coin *0.5 > 3.001:
                     success4_result = upbit.sell_market_order("KRW-HIVE", coin * 0.50)
                     success4_price = float(success4_result['price'])
                     post_message(myToken, "#cointrade", "HIVE 1.5Pro sell : " + str(success4_price))
