@@ -1,4 +1,3 @@
-
 import time
 import pyupbit
 import datetime
@@ -11,6 +10,9 @@ import schedule
 #secret = "your-id"
 #myToken = "your-id"
 
+access = "kbvzoiGSljCNI8WRt5YYUFpSzGxO9YA0454niZ02"
+secret = "phHnc41SznttFdOBo8u9DG92chvzcxl4Gx3OA57D"
+myToken = "xoxb-2750670045522-2752959579764-F8IjCCedRw89cSA0FcyRgPEV"
 
 
 
@@ -224,4 +226,4 @@ while True:
         break
         time.sleep(1)
 
-#ADA >3 , ETH > 0.001 , BTC > 0.0001:
+#ADA >3 , ETH > 0.001 , ETH > 0.0001:
