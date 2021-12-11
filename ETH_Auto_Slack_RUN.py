@@ -11,11 +11,6 @@ import schedule
 #myToken = "your-id"
 
 
-access = "kbvzoiGSljCNI8WRt5YYUFpSzGxO9YA0454niZ02"
-secret = "phHnc41SznttFdOBo8u9DG92chvzcxl4Gx3OA57D"
-myToken ="xoxb-2824809488480-2801092379634-Amm52mKQxOU5CCwpByRxqXRh"
-
-
 
 
 def post_message(token, channel, text):
