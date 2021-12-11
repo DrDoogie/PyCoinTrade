@@ -6,10 +6,14 @@ import schedule
 
 
 
+
+
 #access = "your-id"
 #secret = "your-id"
 #myToken = "your-id"
 
+
+#종목별로 ticker, 5000원 이상에 해당하는 최소개수 변경
 
 
 
