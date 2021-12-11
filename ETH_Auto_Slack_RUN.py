@@ -98,6 +98,10 @@ drop_price = get_drop_price("KRW-ETH", 0.9 )
 print("drop_price:",drop_price)
 current_price = get_current_price("KRW-ETH")
 print("current_price:",current_price)
+start_time = get_start_time("KRW-ETH") + datetime.timedelta(hours=1)  # start_time 2021-12-11 10:00:00
+print("start_time:",start_time)
+end_time = start_time + datetime.timedelta(days=1) - datetime.timedelta(hours=2)  # 9:00 <현재< #7:59:59
+print("end_time:", end_time)
 
 #문자메세지
 post_message(myToken, "#coinautotrade", "ma60 : " + str(ma60))
@@ -186,7 +190,7 @@ while True:
                             post_message(myToken, "#coinautotrade", "ETH 1.5Pro sell : " + str(float(sell_result['volume']))) if sell_result is not None else None
                             post_message(myToken, "#coinautotrade", "ETH 1.5Pro sell : " + str(sell_price))
                             break
-                        elif start_time + datetime.timedelta(hours=15) < now and buy_price * 1.01 < current_price and earn * 0.995 > 0.001:
+                        elif start_time + datetime.timedelta(hours=9) < now and buy_price * 1.01 < current_price and earn * 0.995 > 0.001:
                             sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.9950)
                             sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
                             print("매도가:", sell_price)
