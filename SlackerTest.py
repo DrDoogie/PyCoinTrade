@@ -8,5 +8,5 @@ def post_message(token, channel, text):
                              )
     print(response)
 
-myToken = "id"
-post_message(myToken, "#cointrade", "DDD Hello Roypop")
+#myToken = "id"
+post_message(myToken, "#coinautotrade", "DDD Hello Roypop")
