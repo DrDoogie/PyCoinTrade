@@ -100,7 +100,7 @@ current_price = get_current_price("KRW-ETH")
 print("current_price:",current_price)
 start_time = get_start_time("KRW-ETH") + datetime.timedelta(hours=1)  # start_time 2021-12-11 10:00:00
 print("start_time:",start_time)
-end_time = start_time + datetime.timedelta(days=1) - datetime.timedelta(hours=2)  # 9:00 <현재< #7:59:59
+end_time = start_time + datetime.timedelta(days=1) - datetime.timedelta(hours=3)  # 10:00 <현재< #6:59:59
 print("end_time:", end_time)
 
 #문자메세지
@@ -117,12 +117,12 @@ while True:
         now = datetime.datetime.now()
         start_time = get_start_time("KRW-ETH") + datetime.timedelta(hours=1)  # start_time 2021-12-11 10:00:00
         #print("start_time:",start_time)
-        end_time = start_time + datetime.timedelta(days=1) - datetime.timedelta(hours=2)  # 9:00 <현재< #7:59:59
+        end_time = start_time + datetime.timedelta(days=1) - datetime.timedelta(hours=3)  # 10:00 <현재< #7:59:59
         #print("end_time:", end_time)
         # Error가 발생하지 않으면 1초마다 Try구문 실행
 
         if start_time < now < (end_time - datetime.timedelta(seconds=10)):
-            #target_price = get_target_price("KRW-ETH", 0.3)  #API 조회 오류로 None으로 리턴될 수 있음
+            target_price = get_target_price("KRW-ETH", 0.3)  #API 조회 오류로 None으로 리턴될 수 있음
             #print("target_price:",target_price)
             #ma60 = get_ma60("KRW-ETH")  ##API 조회 오류로 None으로 리턴될 수 있음
             #print("ma60=", ma60)
@@ -151,7 +151,9 @@ while True:
                     post_message(myToken, "#coinautotrade", "ETH buy : " + str(buy_result['price']) + str(now)) if buy_result is not None else None
                     #print("buy_result:",buy_result)
                     buy_price = get_current_price("KRW-ETH") if buy_result is not None else None  # 매수 금액을 buy_price에 입력
-                    #print("buy_price_completed:", buy_price)
+                    # print("buy_price_completed:", buy_price)
+                    buy_time = datetime.datetime.now()
+                    #print("buy_time:", buy_time)
                     post_message(myToken, "#coinautotrade", "ETH buy price: " + str(buy_price) + str(now))
                     # 매수 끝나고 나서 매도 대기
                     while buy_price is not None :
@@ -176,21 +178,24 @@ while True:
                             post_message(myToken, "#coinautotrade", "ETH 3Pro sell : " + str(float(sell_result['volume']))) if sell_result is not None else None
                             post_message(myToken, "#coinautotrade", "ETH 3Pro sell : " + str(sell_price))
                             break
-                        elif start_time + datetime.timedelta(hours=3) < now and buy_price * 1.02 < current_price and earn * 0.995 > 0.001:
+                        elif buy_time + datetime.timedelta(hours=3) < now and buy_price * 1.02 < current_price and earn * 0.995 > 0.001:
+                            #매수후 3시간 동안 2% 수익 대기
                             sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.9950)
                             sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
                             print("매도가:", sell_price)
                             post_message(myToken, "#coinautotrade", "ETH 2Pro sell : " + str(float(sell_result['volume']))) if sell_result is not None else None
                             post_message(myToken, "#coinautotrade", "ETH 2Pro sell : " + str(sell_price))
                             break
-                        elif start_time + datetime.timedelta(hours=6) < now and buy_price * 1.015 < current_price and earn * 0.995 > 0.001:
+                        elif buy_time + datetime.timedelta(hours=6) < now and buy_price * 1.015 < current_price and earn * 0.995 > 0.001:
+                            # 매수후 6시간 동안 1.5% 수익 대기
                             sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.9950)
                             sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
                             print("매도가:", sell_price)
                             post_message(myToken, "#coinautotrade", "ETH 1.5Pro sell : " + str(float(sell_result['volume']))) if sell_result is not None else None
                             post_message(myToken, "#coinautotrade", "ETH 1.5Pro sell : " + str(sell_price))
                             break
-                        elif start_time + datetime.timedelta(hours=9) < now and buy_price * 1.01 < current_price and earn * 0.995 > 0.001:
+                        elif start_time + datetime.timedelta(hours=13) < now and buy_price * 1.01 < current_price and earn * 0.995 > 0.001:
+                            #야간 시간 동안 1% 수익 먹고 빠지기
                             sell_result = upbit.sell_market_order("KRW-ETH", earn * 0.9950)
                             sell_price = get_current_price("KRW-ETH") if sell_result is not None else None  # 매도 금액을 sell_price에 입력
                             print("매도가:", sell_price)
@@ -213,7 +218,7 @@ while True:
 
             # 하락세 급락 방지 손절
             else:
-                #drop_price = get_drop_price("KRW-ETH", 0.9 )
+                drop_price = get_drop_price("KRW-ETH", 0.9 )
                 #print("drop_price:",drop_price)
                 if drop_price > current_price:
                     drop = get_balance("ETH")
@@ -226,7 +231,9 @@ while True:
             btc = get_balance("ETH")
             if btc * 0.9 > 0.001:
                 sell_result = upbit.sell_market_order("KRW-ETH", btc * 0.90) if sell_result is not None else None
-                post_message(myToken, "#coinautotrade", "ETH sell : " + str(sell_result))
+                sell_coin = float(sell_result['volume']) if sell_result is not None else None
+                print("End Trade:", sell_coin)
+                post_message(myToken, "#coinautotrade", "END Trade ETH sell : " + str(sell_coin))
         time.sleep(1)
 
     except Exception as e:
